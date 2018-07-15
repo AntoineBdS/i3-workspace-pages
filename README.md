@@ -7,8 +7,8 @@ Small script to extend the i3 workspaces to multiple 'master' pages of 'child' w
 - command:
   - s2c:    switch to child
   - s2m:    switch to master
-  - mc2c:   move focused container to child
-  - mc2m:   move focused container to master
+  - mc2c:   move container to child
+  - mc2m:   move container to master
   
 - master:
   - Name of the page

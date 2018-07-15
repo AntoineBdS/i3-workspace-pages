@@ -1,0 +1,65 @@
+#/bin/bash
+updateWorkspace () {
+	num=$(printf '%d' "'$1")
+	num=$(($num*20 + $2))
+	workspace="$num:$1.$2"
+} 
+
+
+workspace=$(i3-msg -t get_workspaces | jq -r '.[] | select(.visible) | .name')
+master=${workspace%%.*}; master=${master#*:}
+child=${workspace#*.}
+
+
+case $1 in
+	s2c) # Switch 2 Child
+		child=$2
+		updateWorkspace $master $child
+		i3-msg workspace $workspace
+		;;
+	s2m) # Switch 2 Mater
+		# Save current child workspace
+		echo $child > "/tmp/workspace_$master"
+		master=$2
+		# Go to previous child if exist
+		if [ -f "/tmp/workspace_$master" ]; then
+		child=$(cat /tmp/workspace_$master)
+		else
+			child=1
+		fi
+		updateWorkspace $master $child
+		i3-msg workspace $workspace
+		;;
+	mc2c) # Move Container 2 Child
+		child=$2
+		updateWorkspace $master $child
+		i3-msg move container to workspace $workspace
+		;;
+	mc2m) # Move Container 2 Master
+		master=$2
+		if [ -f "/tmp/workspace_$master" ]; then
+			child=$(cat /tmp/workspace_$master)
+		else
+			child=1
+		fi
+		updateWorkspace $master $child
+		i3-msg move container to workspace $workspace
+		;;
+	name) # print current workspace name
+		echo $workspace
+		;;
+	*)
+		echo "Usage: i3-workspace-pages <command> <master> <child>"
+		echo ""
+		echo "	i3-workspace-pages is a small script to extend the i3"
+		echo "	workspaces to multiple 'master' pages of 'child' workspaces"
+		echo ""
+		echo "	command:"
+		echo "	s2c:	switch to child"
+		echo "	s2m: 	switch to master"
+		echo "	mc2c: 	move focused container to child"
+		echo "	mc2m: 	move focused container to master"
+esac
+
+
+

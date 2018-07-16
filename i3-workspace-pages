@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 updateWorkspace () {
 	num=$(printf '%d' "'$1")
 	num=$(($num*20 + $2))
